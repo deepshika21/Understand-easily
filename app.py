@@ -15,31 +15,51 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* Textarea and input background */
+    /* ---------- Textarea & Input ---------- */
     textarea, input {
         background-color: #1f2933 !important;
         color: #ffffff !important;
         border-radius: 8px !important;
-        border: 1px solid #3b82f6 !important; /* soft blue border */
+        border: 1px solid #6b7280 !important; /* soft gray */
     }
 
-    /* Focus state (when typing) */
     textarea:focus, input:focus {
         outline: none !important;
-        border: 2px solid #3b82f6 !important; /* blue, not red */
-        box-shadow: 0 0 6px rgba(59, 130, 246, 0.5) !important;
+        border: 1px solid #9ca3af !important; /* lighter gray on focus */
+        box-shadow: 0 0 4px rgba(156, 163, 175, 0.4) !important;
     }
 
-    /* Remove red error highlight */
-    div[data-baseweb="textarea"]:has(textarea:focus) {
-        border-color: #3b82f6 !important;
+    /* ---------- Selectbox (LEVEL DROPDOWN) ---------- */
+    div[data-baseweb="select"] > div {
+        background-color: #1f2933 !important;
+        border-radius: 8px !important;
+        border: 1px solid #6b7280 !important; /* soft gray */
+        color: #ffffff !important;
+    }
+
+    div[data-baseweb="select"] > div:focus-within {
+        border: 1px solid #9ca3af !important; /* soft focus */
+        box-shadow: 0 0 4px rgba(156, 163, 175, 0.4) !important;
+    }
+
+    /* Dropdown menu items */
+    ul[role="listbox"] {
+        background-color: #111827 !important;
+        border: 1px solid #374151 !important;
+    }
+
+    li {
+        color: #e5e7eb !important;
+    }
+
+    li:hover {
+        background-color: #1f2933 !important;
     }
     </style>
     """,
     unsafe_allow_html=True
-
-
 )
+
 
 st.divider()
 
