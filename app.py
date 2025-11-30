@@ -14,12 +14,31 @@ st.set_page_config(
 # ---------- HEADER ----------
 st.markdown(
     """
-    <h1 style='text-align: center;'>ELI 5</h1>
-    <p style='text-align: center; color: gray;'>
-    Learn concepts clearly — from child-level intuition to exam-ready answers.
-    </p>
+    <style>
+    /* Textarea and input background */
+    textarea, input {
+        background-color: #1f2933 !important;
+        color: #ffffff !important;
+        border-radius: 8px !important;
+        border: 1px solid #3b82f6 !important; /* soft blue border */
+    }
+
+    /* Focus state (when typing) */
+    textarea:focus, input:focus {
+        outline: none !important;
+        border: 2px solid #3b82f6 !important; /* blue, not red */
+        box-shadow: 0 0 6px rgba(59, 130, 246, 0.5) !important;
+    }
+
+    /* Remove red error highlight */
+    div[data-baseweb="textarea"]:has(textarea:focus) {
+        border-color: #3b82f6 !important;
+    }
+    </style>
     """,
     unsafe_allow_html=True
+
+
 )
 
 st.divider()
@@ -93,5 +112,6 @@ st.markdown(
     "<p style='text-align:center; color:gray;'>Built to learn, not to memorise.</p>",
     unsafe_allow_html=True
 )
+
 
 
