@@ -6,7 +6,8 @@ import os
 
 # ================= CONFIG =================
 N8N_WEBHOOK_URL = "https://deepshika021.app.n8n.cloud/webhook/eli5"
-DATA_FILE = "chats.json"
+DATA_DIR = "data"
+os.makedirs(DATA_DIR, exist_ok=True)
 # ==========================================
 
 st.set_page_config(
@@ -15,7 +16,18 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- PERSISTENCE ----------
+# ---------- LOGIN ----------
+if "username" not in st.session_state:
+    st.markdown("## Login")
+    username = st.text_input("Enter a username")
+    if st.button("Continue") and username.strip():
+        st.session_state.username = username.strip().lower()
+        st.rerun()
+    st.stop()
+
+# ---------- DATA FILE (PER USER) ----------
+DATA_FILE = f"{DATA_DIR}/{st.session_state.username}.json"
+
 def load_chats():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "r") as f:
@@ -43,7 +55,8 @@ if "active_chat" not in st.session_state:
 with st.sidebar:
     st.markdown("## 💬 Chats")
 
-    search = st.text_input("Search chats")
+    # Wider + less rounded search box (CSS handles shape)
+    search = st.text_input("Search chats", placeholder="Search…")
 
     st.divider()
 
@@ -75,60 +88,70 @@ with st.sidebar:
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
     html, body, [class*="css"] {
         font-family: 'Inter', system-ui, sans-serif !important;
     }
 
-    #MainMenu, footer {visibility: hidden;}
+    #MainMenu, footer { visibility: hidden; }
 
-    .stApp { background-color: #0d0f16; }
+    .stApp {
+        background-color: #0d0f16;
+    }
 
-    .container { max-width: 900px; margin: auto; }
+    .container {
+        max-width: 900px;
+        margin: auto;
+    }
 
+    /* Chat bubbles – tighter spacing */
     .bubble {
-        padding: 14px 18px;
+        padding: 12px 16px;
         border-radius: 8px;
-        margin-bottom: 14px;
-        line-height: 1.6;
+        margin-bottom: 10px;
+        line-height: 1.45;
         white-space: pre-wrap;
-        font-size: 15.5px;
+        font-size: 15px;
     }
 
     .user { background-color: #2b2f3a; }
     .assistant { background-color: #1c1f29; }
 
-    /* Search box & inputs */
+    /* Inputs & search box (less round + wider feel) */
     div[data-baseweb="input"] > div {
-        border-radius: 6px !important;
+        border-radius: 4px !important;
     }
 
     div[data-baseweb="input"] input {
-        border-radius: 6px !important;
+        border-radius: 4px !important;
         background-color: #2b2f3a !important;
         color: #ffffff !important;
         border: 1px solid #3a3f4d !important;
+        padding: 10px 12px !important;
     }
 
     div[data-baseweb="input"] input:focus {
-        border: 1px solid #6b7280 !important;
         outline: none !important;
         box-shadow: none !important;
+        border: 1px solid #6b7280 !important;
     }
 
+    /* Buttons */
     button[kind="primary"] {
         background-color: #c7ddff !important;
         color: #000 !important;
         font-weight: 600 !important;
-        border-radius: 8px !important;
+        border-radius: 6px !important;
+        padding: 10px 22px !important;
+        border: none !important;
     }
 
     .caption {
-        text-align:center;
+        text-align: center;
         margin-top: 20px;
-        color:#9ca3af;
-        font-size:14px;
+        color: #9ca3af;
+        font-size: 14px;
     }
     </style>
     """,
@@ -162,25 +185,28 @@ for msg in chat["messages"]:
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- INPUT ----------
+# ---------- CHAT INPUT (ENTER SUBMITS) ----------
 user_input = st.chat_input("Ask a concept or follow-up question…")
 
 # ---------- BACKEND CALL ----------
 if user_input:
     # Rename chat instantly on first message
     if chat["title"] == "New Chat":
-        chat["title"] = user_input[:30] + ("..." if len(user_input) > 30 else "")
+        chat["title"] = user_input[:32] + ("…" if len(user_input) > 32 else "")
 
     chat["messages"].append({"role": "user", "content": user_input})
 
-    with st.spinner("Explaining..."):
+    with st.spinner("Explaining…"):
         try:
             response = requests.post(
                 N8N_WEBHOOK_URL,
-                json={"concept": user_input, "level": level},
+                json={
+                    "concept": user_input,
+                    "level": level
+                },
                 timeout=60
             )
-            output = response.json().get("output", "") if response.status_code == 200 else "Error."
+            output = response.json().get("output", "") if response.status_code == 200 else "Something went wrong."
         except Exception as e:
             output = f"Request failed: {e}"
 
