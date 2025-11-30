@@ -212,3 +212,4 @@ if user_input:
 
 # ---------- FOOTER ----------
 st.markdown("<p class='caption'>Built to understand, not memorise.</p>", unsafe_allow_html=True)
+
