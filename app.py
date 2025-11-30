@@ -49,16 +49,12 @@ with st.sidebar:
         key="search_box"
     )
 
-    st.divider()
-
     level = st.selectbox(
-        "🎯 Explanation Level",
+        "Explanation Level",
         ["Beginner", "School Student", "College Student", "Advanced"]
     )
 
-    st.divider()
-
-    if st.button("➕ New Chat"):
+    if st.button("➕ New Chat", use_container_width=True):
         cid = str(uuid.uuid4())
         st.session_state.chats[cid] = {
             "title": "New Chat",
@@ -68,10 +64,17 @@ with st.sidebar:
         save_chats(st.session_state.chats)
         st.rerun()
 
+    if st.button("🗑️ Clear Chat", use_container_width=True):
+        st.session_state.chats[st.session_state.active_chat]["messages"] = []
+        save_chats(st.session_state.chats)
+        st.rerun()
+
+    st.divider()
+
     for cid, chat in st.session_state.chats.items():
         title = chat["title"]
         if search.lower() in title.lower():
-            if st.button(title, key=cid):
+            if st.button(title, key=cid, use_container_width=True):
                 st.session_state.active_chat = cid
                 st.rerun()
 
@@ -89,9 +92,12 @@ st.markdown(
 
     .stApp { background-color: #0d0f16; }
 
-    .container { max-width: 900px; margin: auto; }
+    .container {
+        max-width: 900px;
+        margin: auto;
+    }
 
-    /* Chat bubbles (CONTROLLED WIDTH) */
+    /* Chat bubbles (controlled width) */
     .bubble {
         padding: 12px 16px;
         border-radius: 8px;
@@ -111,7 +117,7 @@ st.markdown(
         max-width: 620px;
     }
 
-    /* ---------- SEARCH + INPUT STYLING ---------- */
+    /* Sidebar inputs unified */
     section[data-testid="stSidebar"] div[data-baseweb="input"] > div {
         width: 100% !important;
         border-radius: 4px !important;
@@ -137,13 +143,15 @@ st.markdown(
         border: 1px solid #6b7280 !important;
     }
 
-    /* Buttons */
+    section[data-testid="stSidebar"] button {
+        border-radius: 4px !important;
+        padding: 10px 12px !important;
+        font-weight: 600 !important;
+    }
+
     button[kind="primary"] {
         background-color: #c7ddff !important;
         color: #000 !important;
-        font-weight: 600 !important;
-        border-radius: 6px !important;
-        padding: 10px 22px !important;
         border: none !important;
     }
 
@@ -177,15 +185,15 @@ st.markdown("<div class='container'>", unsafe_allow_html=True)
 chat = st.session_state.chats[st.session_state.active_chat]
 
 for msg in chat["messages"]:
-    role = "user" if msg["role"] == "user" else "assistant"
+    cls = "user" if msg["role"] == "user" else "assistant"
     st.markdown(
-        f"<div class='bubble {role}'>{msg['content']}</div>",
+        f"<div class='bubble {cls}'>{msg['content']}</div>",
         unsafe_allow_html=True
     )
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- CHAT INPUT (ENTER = SEND) ----------
+# ---------- CHAT INPUT ----------
 user_input = st.chat_input("Ask a concept or follow-up question…")
 
 # ---------- BACKEND CALL ----------
