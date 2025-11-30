@@ -43,7 +43,7 @@ with col2:
 st.markdown("")  # spacing
 
 # ---------- ACTION ----------
-if st.button("✨ Explain clearly"):
+if st.button("✨ Explain"):
     if concept.strip() == "":
         st.warning("Please enter a concept.")
     else:
@@ -93,4 +93,5 @@ st.markdown(
     "<p style='text-align:center; color:gray;'>Built to learn, not to memorise.</p>",
     unsafe_allow_html=True
 )
+
 
