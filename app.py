@@ -24,6 +24,13 @@ st.markdown(
         background-color: #0d0f16;
     }
 
+    /* Centered container */
+    .container {
+        max-width: 1100px;
+        margin: auto;
+        padding-top: 60px;
+    }
+
     h1 {
         font-size: 48px;
         font-weight: 700;
@@ -36,6 +43,13 @@ st.markdown(
         color: #b8b9c4;
         margin-bottom: 60px;
         text-align: center;
+    }
+
+    /* Labels */
+    .label {
+        font-size: 16px;
+        margin-bottom: 6px;
+        color: #e5e7eb;
     }
 
     /* Textarea */
@@ -53,7 +67,7 @@ st.markdown(
         border: 1px solid #6b7280 !important;
     }
 
-    /* Select box styling */
+    /* Select box */
     div[data-baseweb="select"] > div {
         background: #2b2f3a !important;
         border: 1px solid #3a3f4d !important;
@@ -62,7 +76,6 @@ st.markdown(
         font-size: 16px !important;
     }
 
-    /* Disable typing in selectbox */
     div[data-baseweb="select"] input {
         pointer-events: none !important;
         caret-color: transparent !important;
@@ -98,31 +111,37 @@ st.markdown(
 )
 
 # ---------- CONTENT ----------
+st.markdown('<div class="container">', unsafe_allow_html=True)
+
 st.markdown("<h1>Understand Easily</h1>", unsafe_allow_html=True)
 st.markdown(
     "<p class='subtitle'>Clear explanations — from child-level intuition to exam-ready understanding</p>",
     unsafe_allow_html=True
 )
 
-# ---------- INPUT ROW ----------
-col1, col2 = st.columns([3, 1])
+# ---------- FORM (ENTER KEY WORKS HERE) ----------
+with st.form("explain_form", clear_on_submit=False):
 
-with col1:
-    st.markdown("### Concept:")
-    concept = st.text_area(
-        "",
-        placeholder="e.g. Probability, Deadlock, Ohm's Law"
-    )
+    col1, col2 = st.columns([3, 1])
 
-with col2:
-    st.markdown("### Your Level:")
-    level = st.selectbox(
-        "",
-        ["School Student", "College Student", "Beginner", "Advanced"]
-    )
+    with col1:
+        st.markdown("<div class='label'>Concept</div>", unsafe_allow_html=True)
+        concept = st.text_area(
+            "",
+            placeholder="e.g. Probability, Deadlock, Ohm's Law"
+        )
+
+    with col2:
+        st.markdown("<div class='label'>Your Level</div>", unsafe_allow_html=True)
+        level = st.selectbox(
+            "",
+            ["School Student", "College Student", "Beginner", "Advanced"]
+        )
+
+    submit = st.form_submit_button("Explain")
 
 # ---------- ACTION ----------
-if st.button("Explain"):
+if submit:
     if concept.strip() == "":
         st.warning("Please enter a concept.")
     else:
@@ -147,3 +166,4 @@ if st.button("Explain"):
 
 # ---------- FOOTER ----------
 st.markdown("<footer>Built to understand, not memorise.</footer>", unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
