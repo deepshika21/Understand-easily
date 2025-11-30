@@ -118,7 +118,7 @@ st.markdown(
 
     .user {
         background-color: #2b2f3a;
-        max-width: 720px;
+        max-width: 900px;
     }
 
     .assistant {
@@ -235,4 +235,5 @@ st.markdown(
     "<p class='caption'>Built to understand, not memorise.</p>",
     unsafe_allow_html=True
 )
+
 
