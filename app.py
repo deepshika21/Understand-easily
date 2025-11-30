@@ -38,7 +38,7 @@ st.markdown(
 
     textarea:focus, input:focus {
         outline: none !important;
-        border: 1px solid #9ca3af !important;
+        border: 1px solid #6b7280 !important;
         box-shadow: 0 0 4px rgba(156, 163, 175, 0.4) !important;
     }
 
@@ -169,4 +169,5 @@ st.markdown(
     "<p style='text-align:center; color:#6b7280;'>Built to understand, not memorise.</p>",
     unsafe_allow_html=True
 )
+
 
