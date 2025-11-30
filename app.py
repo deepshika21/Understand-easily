@@ -31,4 +31,6 @@ if st.button("Explain"):
             st.markdown("### 📘 Explanation")
             st.markdown(response.text)
         else:
-            st.error("Something went wrong. Please try again later.")
+            st.error(f"Error {response.status_code}: {response.text}")
+
+
