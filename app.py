@@ -156,7 +156,7 @@ if explain_clicked and user_input.strip():
             output = f"Request failed: {e}"
 
     current_chat["messages"].append({"role": "assistant", "content": output})
-    st.experimental_rerun()  # this exists on your version; if it errors, change to st.rerun()
+    st.rerun()  # this exists on your version; if it errors, change to st.rerun()
 
 # ---------- JS: ENTER = EXPLAIN, SHIFT+ENTER = NEW LINE ----------
 st.markdown(
@@ -184,3 +184,4 @@ st.markdown(
 
 # ---------- FOOTER ----------
 st.markdown("<p class='caption'>Learning made simple, one explanation at a time.</p>", unsafe_allow_html=True)
+
