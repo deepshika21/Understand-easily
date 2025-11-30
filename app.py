@@ -5,9 +5,9 @@ import requests
 N8N_WEBHOOK_URL = "https://deepshika021.app.n8n.cloud/webhook/eli5"
 # ==================
 
-st.set_page_config(page_title="Explain It Like I'm 5", layout="centered")
+st.set_page_config(page_title="Explain It Like I'm 5", layout="wide")
 
-st.title("🧠 Explain It Like I'm 5")
+st.title("Explain It Like I'm 5")
 st.write("An AI agent that explains concepts clearly at different levels.")
 
 concept = st.text_area(
@@ -31,6 +31,4 @@ if st.button("Explain"):
             st.markdown("### 📘 Explanation")
             st.markdown(response.text)
         else:
-            st.error(f"Error {response.status_code}: {response.text}")
-
-
+            st.error(f"Error: {response.status_code}")
