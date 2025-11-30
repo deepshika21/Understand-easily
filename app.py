@@ -11,14 +11,12 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- CUSTOM CSS (FROM YOUR HTML) ----------
+# ---------- CUSTOM CSS ----------
 st.markdown(
     """
     <style>
     body {
-        margin: 0;
         background-color: #0d0f16;
-        font-family: Arial, sans-serif;
         color: #ffffff;
     }
 
@@ -40,21 +38,14 @@ st.markdown(
         text-align: center;
     }
 
-    /* Layout container */
-    .container {
-        max-width: 1200px;
-        margin: auto;
-        padding-top: 60px;
-    }
-
     /* Textarea */
     textarea {
         background: #2b2f3a !important;
         border: 1px solid #3a3f4d !important;
         color: #ffffff !important;
-        font-size: 16px !important;
         border-radius: 8px !important;
         height: 80px !important;
+        font-size: 16px !important;
     }
 
     textarea:focus {
@@ -62,13 +53,19 @@ st.markdown(
         border: 1px solid #6b7280 !important;
     }
 
-    /* Select box */
+    /* Select box styling */
     div[data-baseweb="select"] > div {
         background: #2b2f3a !important;
         border: 1px solid #3a3f4d !important;
         color: #ffffff !important;
         border-radius: 8px !important;
         font-size: 16px !important;
+    }
+
+    /* Disable typing in selectbox */
+    div[data-baseweb="select"] input {
+        pointer-events: none !important;
+        caret-color: transparent !important;
     }
 
     /* Button */
@@ -80,7 +77,8 @@ st.markdown(
         border-radius: 6px !important;
         padding: 12px 30px !important;
         border: none !important;
-        margin-top: 20px !important;
+        margin-top: 10px !important;
+        cursor: pointer !important;
     }
 
     button[kind="primary"]:hover {
@@ -100,8 +98,6 @@ st.markdown(
 )
 
 # ---------- CONTENT ----------
-st.markdown('<div class="container">', unsafe_allow_html=True)
-
 st.markdown("<h1>Understand Easily</h1>", unsafe_allow_html=True)
 st.markdown(
     "<p class='subtitle'>Clear explanations — from child-level intuition to exam-ready understanding</p>",
@@ -112,12 +108,14 @@ st.markdown(
 col1, col2 = st.columns([3, 1])
 
 with col1:
+    st.markdown("### Concept:")
     concept = st.text_area(
         "",
         placeholder="e.g. Probability, Deadlock, Ohm's Law"
     )
 
 with col2:
+    st.markdown("### Your Level:")
     level = st.selectbox(
         "",
         ["School Student", "College Student", "Beginner", "Advanced"]
@@ -129,25 +127,23 @@ if st.button("Explain"):
         st.warning("Please enter a concept.")
     else:
         with st.spinner("Explaining clearly..."):
-            response = requests.post(
-                N8N_WEBHOOK_URL,
-                json={
-                    "concept": concept,
-                    "level": level
-                },
-                timeout=60
-            )
+            try:
+                response = requests.post(
+                    N8N_WEBHOOK_URL,
+                    json={"concept": concept, "level": level},
+                    timeout=60
+                )
 
-        if response.status_code == 200:
-            data = response.json()
-            explanation = data.get("output", "")
+                if response.status_code == 200:
+                    data = response.json()
+                    explanation = data.get("output", "")
+                    st.markdown("<br>", unsafe_allow_html=True)
+                    st.markdown(explanation)
+                else:
+                    st.error(f"Error: {response.status_code}")
 
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.markdown(explanation)
-        else:
-            st.error(f"Error {response.status_code}")
+            except Exception as e:
+                st.error(f"Request failed: {e}")
 
 # ---------- FOOTER ----------
 st.markdown("<footer>Built to understand, not memorise.</footer>", unsafe_allow_html=True)
-st.markdown("</div>", unsafe_allow_html=True)
-
