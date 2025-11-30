@@ -5,137 +5,130 @@ import requests
 N8N_WEBHOOK_URL = "https://deepshika021.app.n8n.cloud/webhook/eli5"
 # ==========================================
 
-# ---------- PAGE CONFIG ----------
 st.set_page_config(
-    page_title="Explain It Like I'm 5",
-    page_icon="🧠",
+    page_title="FRIEND FOR EXAM",
+    page_icon="📘",
     layout="wide"
 )
 
-# ---------- GLOBAL UI STYLES (GREY ONLY) ----------
+# ---------- CUSTOM CSS (FROM YOUR HTML) ----------
 st.markdown(
     """
     <style>
-    /* Page background */
+    body {
+        margin: 0;
+        background-color: #0d0f16;
+        font-family: Arial, sans-serif;
+        color: #ffffff;
+    }
+
     .stApp {
-        background-color: #020617;  /* very dark slate */
-        color: #e5e7eb;
+        background-color: #0d0f16;
     }
 
-
-    /* General text */
-    h1, h2, h3, h4, h5, h6, p, label {
-        color: #e5e7eb !important;
+    h1 {
+        font-size: 48px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-align: center;
     }
 
-    /* Textarea + input */
-    textarea, input {
-        background-color: #020617 !important;
-        color: #e5e7eb !important;
+    .subtitle {
+        font-size: 18px;
+        color: #b8b9c4;
+        margin-bottom: 60px;
+        text-align: center;
+    }
+
+    /* Layout container */
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding-top: 60px;
+    }
+
+    /* Textarea */
+    textarea {
+        background: #2b2f3a !important;
+        border: 1px solid #3a3f4d !important;
+        color: #ffffff !important;
+        font-size: 16px !important;
         border-radius: 8px !important;
-        border: 1px solid #6b7280 !important;
+        height: 80px !important;
     }
 
-    textarea:focus, input:focus {
+    textarea:focus {
         outline: none !important;
         border: 1px solid #6b7280 !important;
-        box-shadow: 0 0 4px rgba(156, 163, 175, 0.4) !important;
     }
 
-    /* Selectbox */
+    /* Select box */
     div[data-baseweb="select"] > div {
-        background-color: #1f2933 !important;
+        background: #2b2f3a !important;
+        border: 1px solid #3a3f4d !important;
+        color: #ffffff !important;
         border-radius: 8px !important;
-        border: 1px solid #6b7280 !important;
-        color: #e5e7eb !important;
-    }
-
-    div[data-baseweb="select"] > div:focus-within {
-        border: 1px solid #9ca3af !important;
-        box-shadow: 0 0 4px rgba(156, 163, 175, 0.4) !important;
-    }
-
-    /* Dropdown menu */
-    ul[role="listbox"] {
-        background-color: #111827 !important;
-        border: 1px solid #374151 !important;
-    }
-
-    li {
-        color: #e5e7eb !important;
-    }
-
-    li:hover {
-        background-color: #1f2933 !important;
+        font-size: 16px !important;
     }
 
     /* Button */
     button[kind="primary"] {
-        background-color: #1f2933 !important;
-        color: #e5e7eb !important;
-        border: 1px solid #6b7280 !important;
-        border-radius: 8px !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 16px !important;
+        font-weight: bold !important;
+        border-radius: 6px !important;
+        padding: 12px 30px !important;
+        border: none !important;
+        margin-top: 20px !important;
     }
 
     button[kind="primary"]:hover {
-        background-color: #374151 !important;
-        border: 1px solid #9ca3af !important;
+        opacity: 0.8 !important;
     }
 
-    /* Expander */
-    details {
-        background-color: #111827 !important;
-        border: 1px solid #374151 !important;
-        border-radius: 8px !important;
-        padding: 4px !important;
-    }
-
-    summary {
-        font-size: 1rem !important;
-        color: #e5e7eb !important;
+    footer {
+        margin-top: 80px;
+        color: #a5a6b1;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 50px;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# ---------- HEADER ----------
+# ---------- CONTENT ----------
+st.markdown('<div class="container">', unsafe_allow_html=True)
+
+st.markdown("<h1>Explain It Like I’m 5</h1>", unsafe_allow_html=True)
 st.markdown(
-    """
-    <h1 style="text-align:center;">Explain It Like I'm 5</h1>
-    <p style="text-align:center; color:#9ca3af;">
-    Clear explanations — from child-level intuition to exam-ready understanding
-    </p>
-    """,
+    "<p class='subtitle'>Clear explanations — from child-level intuition to exam-ready understanding</p>",
     unsafe_allow_html=True
 )
 
-st.divider()
-
-# ---------- INPUT SECTION ----------
-col1, col2 = st.columns([2, 1])
+# ---------- INPUT ROW ----------
+col1, col2 = st.columns([3, 1])
 
 with col1:
     concept = st.text_area(
-        "Concept",
-        placeholder="e.g. Probability, Deadlock, Ohm's Law",
-        height=120
+        "",
+        placeholder="e.g. Probability, Deadlock, Ohm's Law"
     )
 
 with col2:
     level = st.selectbox(
-        "Your level",
-        ["School Student", "College Student", "Exam Preparation"]
+        "",
+        ["School Student", "College Student", "Beginner", "Advanced"]
     )
-
-st.markdown("")
 
 # ---------- ACTION ----------
 if st.button("Explain"):
     if concept.strip() == "":
         st.warning("Please enter a concept.")
     else:
-        with st.spinner("Thinking clearly..."):
+        with st.spinner("Explaining clearly..."):
             response = requests.post(
                 N8N_WEBHOOK_URL,
                 json={
@@ -149,25 +142,11 @@ if st.button("Explain"):
             data = response.json()
             explanation = data.get("output", "")
 
-            st.divider()
-            st.subheader("Explanation")
-
-            # Section-aware display
-            if "Explain Like I'm 5" in explanation:
-                with st.expander("Explain Like I'm 5"):
-                    st.markdown(explanation)
-            else:
-                # fallback if agent returns plain text
-                st.markdown(explanation)
-
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown(explanation)
         else:
             st.error(f"Error {response.status_code}")
 
 # ---------- FOOTER ----------
-st.divider()
-st.markdown(
-    "<p style='text-align:center; color:#6b7280;'>Built to understand, not memorise.</p>",
-    unsafe_allow_html=True
-)
-
-
+st.markdown("<footer>Built to understand, not memorise.</footer>", unsafe_allow_html=True)
+st.markdown("</div>", unsafe_allow_html=True)
