@@ -23,11 +23,11 @@ if "active_chat" not in st.session_state:
 
 # ---------- SIDEBAR ----------
 with st.sidebar:
-    st.markdown("## 💬 Chats")
+    st.markdown("## 🗪 Chats")
 
     search = st.text_input("Search chats")
 
-    if st.button("➕ New Chat"):
+    if st.button("✚ New Chat"):
         new_id = str(uuid.uuid4())
         st.session_state.chats[new_id] = []
         st.session_state.active_chat = new_id
@@ -166,3 +166,4 @@ st.markdown(
     "<p class='caption'>Built to understand, not memorise.</p>",
     unsafe_allow_html=True
 )
+
