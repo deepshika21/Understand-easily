@@ -32,6 +32,7 @@ st.markdown(
         font-size: 48px;
         font-weight: 700;
         text-align: center;
+        margin-bottom: 10px;
     }
 
     .subtitle {
@@ -39,14 +40,6 @@ st.markdown(
         color: #b8b9c4;
         text-align: center;
         margin-bottom: 40px;
-    }
-
-    .hint {
-        text-align: right;
-        font-size: 13px;
-        color: #9ca3af;
-        margin-top: -8px;
-        margin-bottom: 10px;
     }
 
     textarea {
@@ -59,8 +52,8 @@ st.markdown(
     }
 
     textarea:focus {
-        border: 1px solid #6b7280 !important;
         outline: none !important;
+        border: 1px solid #6b7280 !important;
     }
 
     div[data-baseweb="select"] > div {
@@ -77,14 +70,24 @@ st.markdown(
         font-weight: bold !important;
         border-radius: 6px !important;
         padding: 12px 30px !important;
+        margin-top: 10px !important;
+    }
+
+    footer {
+        margin-top: 80px;
+        color: #a5a6b1;
+        font-size: 14px;
+        text-align: center;
+        margin-bottom: 40px;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# ---------- CONTENT ----------
+# ---------- PAGE CONTENT ----------
 st.markdown('<div class="container">', unsafe_allow_html=True)
+
 st.markdown("<h1>Understand Easily</h1>", unsafe_allow_html=True)
 st.markdown(
     "<p class='subtitle'>Clear explanations — from child-level intuition to exam-ready understanding</p>",
@@ -98,10 +101,9 @@ with st.form("explain_form", clear_on_submit=False):
     with col1:
         concept = st.text_area(
             "Concept",
-            placeholder="Type a concept or a follow-up question…",
+            placeholder="Type a concept or follow-up question…",
             key="concept_input"
         )
-        st.markdown("<div class='hint'>Press Ctrl + Enter to explain</div>", unsafe_allow_html=True)
 
     with col2:
         level = st.selectbox(
@@ -111,21 +113,19 @@ with st.form("explain_form", clear_on_submit=False):
 
     submit = st.form_submit_button("Explain")
 
-# ---------- ACTION ----------
+# ---------- SUBMIT LOGIC ----------
 if submit:
     if concept.strip() == "":
         st.warning("Please enter a concept.")
     else:
         with st.spinner("Explaining clearly…"):
-            payload = {
-                "concept": concept,
-                "level": level,
-                "previous_context": st.session_state.last_explanation
-            }
-
             response = requests.post(
                 N8N_WEBHOOK_URL,
-                json=payload,
+                json={
+                    "concept": concept,
+                    "level": level,
+                    "previous_context": st.session_state.last_explanation
+                },
                 timeout=60
             )
 
@@ -133,11 +133,35 @@ if submit:
                 data = response.json()
                 explanation = data.get("output", "")
                 st.session_state.last_explanation = explanation
-
                 st.markdown("<br>", unsafe_allow_html=True)
                 st.markdown(explanation)
             else:
                 st.error(f"Error: {response.status_code}")
+
+# ---------- ENTER / SHIFT+ENTER HANDLER ----------
+st.markdown(
+    """
+    <script>
+    const textarea = parent.document.querySelector("textarea");
+
+    if (textarea) {
+        textarea.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+
+                const buttons = parent.document.querySelectorAll("button");
+                buttons.forEach(btn => {
+                    if (btn.innerText === "Explain") {
+                        btn.click();
+                    }
+                });
+            }
+        });
+    }
+    </script>
+    """,
+    unsafe_allow_html=True
+)
 
 # ---------- FOOTER ----------
 st.markdown("<footer>Built to understand, not memorise.</footer>", unsafe_allow_html=True)
