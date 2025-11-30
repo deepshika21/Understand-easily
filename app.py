@@ -6,8 +6,7 @@ import os
 
 # ================= CONFIG =================
 N8N_WEBHOOK_URL = "https://deepshika021.app.n8n.cloud/webhook/eli5"
-DATA_DIR = "data"
-os.makedirs(DATA_DIR, exist_ok=True)
+DATA_FILE = "chats.json"
 # ==========================================
 
 st.set_page_config(
@@ -16,18 +15,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------- LOGIN ----------
-if "username" not in st.session_state:
-    st.markdown("## Login")
-    username = st.text_input("Enter a username")
-    if st.button("Continue") and username.strip():
-        st.session_state.username = username.strip().lower()
-        st.rerun()
-    st.stop()
-
-# ---------- DATA FILE (PER USER) ----------
-DATA_FILE = f"{DATA_DIR}/{st.session_state.username}.json"
-
+# ---------- PERSISTENCE ----------
 def load_chats():
     if os.path.exists(DATA_FILE):
         with open(DATA_FILE, "r") as f:
@@ -55,8 +43,11 @@ if "active_chat" not in st.session_state:
 with st.sidebar:
     st.markdown("## 💬 Chats")
 
-    # Wider + less rounded search box (CSS handles shape)
-    search = st.text_input("Search chats", placeholder="Search…")
+    search = st.text_input(
+        "Search chats",
+        placeholder="Search…",
+        key="search_box"
+    )
 
     st.divider()
 
@@ -96,44 +87,53 @@ st.markdown(
 
     #MainMenu, footer { visibility: hidden; }
 
-    .stApp {
-        background-color: #0d0f16;
-    }
+    .stApp { background-color: #0d0f16; }
 
-    .container {
-        max-width: 900px;
-        margin: auto;
-    }
+    .container { max-width: 900px; margin: auto; }
 
-    /* Chat bubbles – tighter spacing */
+    /* Chat bubbles (CONTROLLED WIDTH) */
     .bubble {
         padding: 12px 16px;
         border-radius: 8px;
-        margin-bottom: 10px;
+        margin: 0 auto 12px auto;
         line-height: 1.45;
         white-space: pre-wrap;
         font-size: 15px;
     }
 
-    .user { background-color: #2b2f3a; }
-    .assistant { background-color: #1c1f29; }
-
-    /* Inputs & search box (less round + wider feel) */
-    div[data-baseweb="input"] > div {
-        border-radius: 4px !important;
+    .user {
+        background-color: #2b2f3a;
+        max-width: 720px;
     }
 
-    div[data-baseweb="input"] input {
+    .assistant {
+        background-color: #1c1f29;
+        max-width: 620px;
+    }
+
+    /* ---------- SEARCH + INPUT STYLING ---------- */
+    section[data-testid="stSidebar"] div[data-baseweb="input"] > div {
+        width: 100% !important;
+        border-radius: 4px !important;
+        background-color: #2b2f3a !important;
+        border: 1px solid #3a3f4d !important;
+    }
+
+    section[data-testid="stSidebar"] div[data-baseweb="input"] input {
+        width: 100% !important;
         border-radius: 4px !important;
         background-color: #2b2f3a !important;
         color: #ffffff !important;
-        border: 1px solid #3a3f4d !important;
+        border: none !important;
         padding: 10px 12px !important;
+        box-shadow: none !important;
     }
 
-    div[data-baseweb="input"] input:focus {
-        outline: none !important;
-        box-shadow: none !important;
+    section[data-testid="stSidebar"] div[data-baseweb="input"]:hover > div {
+        border: 1px solid #6b7280 !important;
+    }
+
+    section[data-testid="stSidebar"] div[data-baseweb="input"]:has(input:focus) > div {
         border: 1px solid #6b7280 !important;
     }
 
@@ -185,12 +185,11 @@ for msg in chat["messages"]:
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------- CHAT INPUT (ENTER SUBMITS) ----------
+# ---------- CHAT INPUT (ENTER = SEND) ----------
 user_input = st.chat_input("Ask a concept or follow-up question…")
 
 # ---------- BACKEND CALL ----------
 if user_input:
-    # Rename chat instantly on first message
     if chat["title"] == "New Chat":
         chat["title"] = user_input[:32] + ("…" if len(user_input) > 32 else "")
 
